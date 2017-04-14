@@ -1,14 +1,45 @@
+//
+//  Probably Note
+// 
+//  Created by Attila Enhardt on 2017-04-14
+// 	Copyright codecave STHLM / LogicScripts 2017.
+//
+
 PluginParameters = [];
-let prob = new Parameter(null, "Transpose pprobability", "lin", "prop", null, 0, 100, 0, 100, "%");
-let semiTones = new Parameter(null, "Transpose ± semitones", "lin", null, null, 1, 12, 3, null, "st.");
+let scriptName = new Parameter(null, "Probably Note by codecave STHLM")
+let prob = new Parameter(null, "Transpose probability", "lin", "prop", null, 0, 100, 0, 100, " %");
+let semiTones = new Parameter(null, "Transpose semitones", "lin", null, null, -12, 12, 0, 24, " st.");
 let noteLookUp = [];
 for (let i = 0; i < 128; i++) {
     noteLookUp.push(i);
 }
 
 function HandleMIDI(e) {
-
+    if (e instanceof NoteOn) {
+        treatNoteOn(e);
+    }
+    if (e instanceof NoteOff) {
+        treatNoteOff(e);
+    }
+    e.send();
 }
+
+function treatNoteOn(e) {
+    let p = Math.floor(Math.random() * 101);
+    if (p <= GetParameter("Transpose probability")) {
+        let originalPitch = e.pitch;
+        e.pitch += GetParameter("Transpose semitones");
+        noteLookUp[originalPitch] = e.pitch;
+    }
+}
+
+function treatNoteOff(e) {
+    let originalPitch = e.pitch;
+    e.pitch = noteLookUp[e.pitch];
+    noteLookUp[originalPitch] = originalPitch;
+}
+
+
 
 function Parameter(cb, n, t, pc, vs, miv, mav, def, nos, unit) {
     let vsl = vs ? vs.length : null;
