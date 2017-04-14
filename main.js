@@ -1,6 +1,5 @@
 //
 //  Probably Note
-// 
 //  Created by Attila Enhardt on 2017-04-14
 // 	Copyright codecave STHLM / LogicScripts 2017.
 //
